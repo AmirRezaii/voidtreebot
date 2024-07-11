@@ -12,6 +12,12 @@ spl_autoload_register(function (string $class_name) {
     }
 });
 
+if ($_SERVER['REQUEST_METHOD'] == "GET") {
+    echo "hello why are you here?";
+    die();
+}
+
+
 use TBot\Dotenv;
 
 $dotenv = new Dotenv;

@@ -8,7 +8,7 @@ class Bot {
     private string $token;
     public object $update;
     public array $default;
-    public ?array $update_data;
+    public array $update_data;
     public ?string $result;
 
     public function __construct(string $token) {
