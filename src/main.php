@@ -5,7 +5,12 @@ use TBot\Bot;
 $bot = new Bot($_ENV["telegram_token"]);
 
 $bot->getUpdate();
-$bot->setWebhook("https://c86f-185-53-211-24.ngrok-free.app/");
+$bot->setWebhook("https://voidtree.ir/voidtreebot");
+
+if ($_SERVER['REQUEST_METHOD'] == "GET") {
+    echo "hello why are you here?";
+    die();
+}
 
 $text = $bot->update_data["text"];
 if ($text == "/start") {
