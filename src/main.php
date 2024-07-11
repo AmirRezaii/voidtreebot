@@ -11,8 +11,7 @@ $bot->default = [
 ];
 
 $bot->getUpdate();
-$bot->setWebhook("https://voidtree.ir/voidtreebot");
-$bot->sendMessage($bot->result);
+$bot->setWebhook("https://voidtree.ir/voidtreebot/");
 
 if ($_SERVER['REQUEST_METHOD'] == "GET") {
     echo "hello why are you here?";

@@ -8,12 +8,11 @@ class Bot {
     private string $token;
     public object $update;
     public array $default;
-    public array $update_data;
+    public ?array $update_data;
     public ?string $result;
 
     public function __construct(string $token) {
-        $this->token = $token;
-    }
+        $this->token = $token; }
 
     public function __call(string $method, $args) : void {
         $this->telegramMethod($method, $args[0], $args[1] ?? []);
@@ -26,7 +25,9 @@ class Bot {
             $main = $main ?? $this->default[$method][$this->getDefault($method)];
             $query[$this->getDefault($method)] = $main;
         }
-        $this->default[$method] = isset($this->default[$method]) ? ArrayManager::combineArrays($this->default[$method], $this->getClassDefault($method)) : $this->getClassDefault($method);
+        if (isset($this->update_data)) {
+            $this->default[$method] = isset($this->default[$method]) ? ArrayManager::combineArrays($this->default[$method], $this->getClassDefault($method)) : $this->getClassDefault($method);
+        }
         $query = isset($this->default[$method]) ? ArrayManager::combineArrays($this->default[$method], $query) : $query;
         $this->request($method, $query);
     }
