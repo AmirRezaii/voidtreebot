@@ -6,6 +6,7 @@ $bot = new Bot($_ENV["telegram_token"]);
 
 $bot->getUpdate();
 $bot->setWebhook("https://voidtree.ir/voidtreebot");
+$bot->sendMessage($bot->result);
 
 if ($_SERVER['REQUEST_METHOD'] == "GET") {
     echo "hello why are you here?";
