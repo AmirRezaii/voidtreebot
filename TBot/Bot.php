@@ -121,7 +121,9 @@ class Bot {
     protected function request(string $method, array $query) : void {
         $url = "https://api.telegram.org/bot{$this->token}/";
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url . $method . "?" . http_build_query($query));
+        curl_setopt($ch, CURLOPT_URL, $url . $method);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($query));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $this->result = curl_exec($ch);
         curl_close($ch);
