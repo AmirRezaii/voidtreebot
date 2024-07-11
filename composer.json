@@ -1,0 +1,11 @@
+{
+    "name": "amir/tbot",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Amir Rezaii",
+            "email": "43274376+AmirRezaii@users.noreply.github.com"
+        }
+    ],
+    "require": {}
+}

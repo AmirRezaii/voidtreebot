@@ -1,0 +1,16 @@
+CREATE TABLE users (
+	id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    user_name VARCHAR(255),
+    step VARCHAR(35) NOT NULL DEFAULT "start",
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+CREATE TABLE channels (
+    id INT NOT NULL AUTO_INCREMENT,
+    chat_id INT NOT NULL,
+    user_id INT NOT NULL,
+    active VARCHAR(35) NOT NULL DEFAULT "true",
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
