@@ -9,7 +9,7 @@ class Bot {
     public object $update;
     public array $default;
     public array $update_data;
-    public ?string $result;
+    public ?array $result;
 
     public function __construct(string $token) {
         $this->token = $token; }
@@ -125,7 +125,7 @@ class Bot {
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($query));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $this->result = curl_exec($ch);
+        $this->result = json_decode(curl_exec($ch), true);
         curl_close($ch);
     }
 
