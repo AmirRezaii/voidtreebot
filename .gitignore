@@ -1,4 +1,4 @@
 /vendor/
 .env
-composer.json
-temp.txt
+/composer.json
+/temp.txt

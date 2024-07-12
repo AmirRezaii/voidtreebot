@@ -44,30 +44,9 @@ if ($text == "/start") {
 
     $step = "add";
 } else if ($text == "/list") {
-    $query = "SELECT * FROM channels WHERE user_id = :user_id;";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":user_id", $user["id"]);
-    $stmt->execute();
+    $channs = getChannsUser($db, $user["id"]);
 
-    $channs = $stmt->fetchAll();
-
-    $keys = [];
-
-    foreach ($channs as $row) {
-        $bot->getChat($row["chat_id"]);
-        $chat = $bot->result["result"];
-
-        $title_key = [ $chat["title"], "title." . $row["chat_id"] ];
-        $active_key = [ $row["active"] == "true" ? "Activated" : "Deactivated", $row["chat_id"] . "." . $row["active"] ];
-        $delete_key = [ "Delete", "delete." . $row["chat_id"] ];
-
-        $key = [];
-        $key[] = $title_key;
-        $key[] = $active_key;
-        $key[] = $delete_key;
-
-        $keys[] = $key;
-    }
+    $keys = generateKeys($bot, $channs);
 
     $ikeyboard = new InlineKeyboard(InlineKeyboard::init($keys,true));
 
@@ -98,7 +77,6 @@ if ($text == "/start") {
         if ($chat["type"] != "channel") $res = false;
         if (getChann($db, $chat["id"])) $res = false;
 
-        f_log(json_encode($chat));
         if ($res) {
             $query = "INSERT INTO channels (chat_id, user_id) VALUES (:chat_id, :user_id);";
             $stmt = $db->prepare($query);
@@ -212,7 +190,6 @@ if ($text == "/start") {
                 $bot->sendMessage($text, [
                     "chat_id" => $ch["chat_id"]
                 ]);
-                f_log(var_export($bot->result, true));
             }
         } else {
             $bot->sendMessage("Not a Valid Message!");
@@ -220,10 +197,10 @@ if ($text == "/start") {
         }
     }
     
-    //if ($res) {
-    //    $bot->sendMessage("Post Sent Successfully");
-    //    $step = "start";
-    //}
+    if ($res) {
+        $bot->sendMessage("Post Sent Successfully");
+        $step = "start";
+    }
 } else if (isset($bot->update_data["callback_id"])) {
     $da = explode(".", $bot->update_data["data"]);
     if ($da[0] == "title") {
@@ -238,14 +215,26 @@ if ($text == "/start") {
             $bot->answerCallbackQuery("Channel Deleted");
         }
     } else {
-        $status = $da[1] == "true" ? "false" : "true";
+        $status = $da[1] ? 0 : 1;
         $query = "UPDATE channels SET active = {$status} WHERE chat_id = {$da[0]};";
         $res = $db->exec($query);
 
         if ($res) {
-            $bot->answerCallbackQuery("Channel " . $status == "false" ? "Deactivated" : "Activated");
+            $bot->answerCallbackQuery("Channel " . $status ? "Activated" : "Deactivated");
         }
     }
+
+
+    $channs = getChannsUser($db, $user["id"]);
+
+    $keys = generateKeys($bot, $channs);
+
+
+    $ikeyboard = new InlineKeyboard(InlineKeyboard::init($keys,true));
+
+    $bot->editMessageText("List of Channels:", [
+        "reply_markup" => $ikeyboard->use()
+    ]);
 }
 
 
@@ -265,6 +254,15 @@ function getChann(PDO $db, int $channel_id) : bool|array {
     $stmt->execute();
 
     return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function getChannsUser(PDO $db, int $user_id) : bool|array {
+    $query = "SELECT * FROM channels WHERE user_id = :user_id;";
+    $stmt = $db->prepare($query);
+    $stmt->bindParam(":user_id", $user_id);
+    $stmt->execute();
+
+    return $stmt->fetchAll();
 }
 
 function addUser(PDO $db, int $user_id, ?string $user_name = null) : bool {
@@ -294,6 +292,27 @@ function findUser(PDO $db, int $user_id) : bool|array {
     $stmt->execute();
 
     return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function generateKeys(Bot $bot, $channs) : array {
+    $keys = [];
+
+    foreach ($channs as $row) {
+        $bot->getChat($row["chat_id"]);
+        $chat = $bot->result["result"];
+
+        $title_key = [ $chat["title"], "title." . $row["chat_id"] ];
+        $active_key = [ $row["active"] ? "Activated" : "Deactivated", $row["chat_id"] . "." . $row["active"] ];
+        $delete_key = [ "Delete", "delete." . $row["chat_id"] ];
+
+        $key = [];
+        $key[] = $title_key;
+        $key[] = $active_key;
+        $key[] = $delete_key;
+
+        $keys[] = $key;
+    }
+    return $keys;
 }
 
 function f_log(string $text) : void {
