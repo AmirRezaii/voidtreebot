@@ -2,6 +2,7 @@
 
 use TBot\Bot;
 use TBot\Database;
+use TBot\Objects\InlineKeyboard;
 use TBot\Objects\ReplyKeyboard;
 
 define("SPAM_TIME", 0.5);
@@ -12,7 +13,7 @@ $db = $db->getConnection();
 
 $bot->default = [
     "sendMessage" => [
-        "chat_id" => $_ENV["admin_id"]
+        "chat_id" => $_ENV["admin_id"],
     ]
 ];
 
@@ -48,15 +49,43 @@ if ($text == "/start") {
     $stmt->bindParam(":user_id", $user["id"]);
     $stmt->execute();
 
-    $channs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $channs = $stmt->fetchAll();
+
+    $keys = [];
 
     foreach ($channs as $row) {
         $bot->getChat($row["chat_id"]);
         $chat = $bot->result["result"];
-        $bot->sendMessage($chat["title"]);
+
+        $title_key = [ $chat["title"], "title." . $row["chat_id"] ];
+        $active_key = [ $row["active"] == "true" ? "Activated" : "Deactivated", $row["chat_id"] . "." . $row["active"] ];
+        $delete_key = [ "Delete", "delete." . $row["chat_id"] ];
+
+        $key = [];
+        $key[] = $title_key;
+        $key[] = $active_key;
+        $key[] = $delete_key;
+
+        $keys[] = $key;
     }
+
+    $ikeyboard = new InlineKeyboard(InlineKeyboard::init($keys,true));
+
+    $bot->sendMessage("List of Channels:", [
+        "reply_markup" => $ikeyboard->use()
+    ]);
 } else if ($text == "/post") {
-    $bot->sendMessage("Please Send The Post...");
+    $keys = [
+        [ "Video", "Photo" ],
+        [ "Voice", "Audio" ],
+        [ "Text" ]
+    ];
+
+    $reply = new ReplyKeyboard(ReplyKeyboard::init($keys));
+
+    $bot->sendMessage("Please Select...", [
+        "reply_markup" => $reply->use()
+    ]);
 
     $step = "post";
 } else if ($user["step"] == "add") {
@@ -86,24 +115,6 @@ if ($text == "/start") {
         $bot->sendMessage("Please Send The Correct Channel Id");
     }
 } else if ($user["step"] == "post") {
-
-
-    $keys = [
-        [ "Video", "Photo" ],
-        [ "Voice", "Audio" ],
-        [ "Text" ]
-    ];
-
-    $reply = new ReplyKeyboard(ReplyKeyboard::init($keys));
-
-    $bot->sendMessage("Please Select...", [
-        "reply_markup" => $reply->use()
-    ]);
-
-    $step = "select_post";
-
-
-} else if ($user["step"] == "select_post") {
     $bot->default = [
         "sendMessage" => [
             "reply_markup" => ReplyKeyboard::remove()
@@ -129,7 +140,10 @@ if ($text == "/start") {
         $bot->sendMessage("Not a Valid Type!");
         $step = "start";
     }
-}  else {
+
+}  else if (in_array($user["step"], ["Voice", "Video", "Audio", "Text", "Photo"])) {
+    $caption = $bot->update_data["caption"];
+
     $query = "SELECT * FROM channels WHERE user_id = :user_id;";
     $stmt = $db->prepare($query);
     $stmt->bindParam(":user_id", $user["id"]);
@@ -138,49 +152,59 @@ if ($text == "/start") {
     $channs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $video = $bot->update_data["video_id"];
-    $photo = $bot->update_data["photo_id"];
+    $photo = $bot->update_data["photo"];
     $audio = $bot->update_data["audio_id"];
     $voice = $bot->update_data["voice_id"];
+
+    $res = true;
 
     if ($user["step"] == "Video") {
         if (isset($video)) {
             foreach ($channs as $ch) {
                 $bot->sendVideo($video, [
-                    "chat_id" => $ch["chat_id"]
+                    "chat_id" => $ch["chat_id"],
+                    "caption" => $caption
                 ]);
             }
         } else {
             $bot->sendMessage("Not a Valid Video!");
+            $res = false;
         }
     } else if ($user["step"] == "Photo") {
         if (isset($photo)) {
             foreach ($channs as $ch) {
-                $bot->sendPhoto($photo, [
-                    "chat_id" => $ch["chat_id"]
+                $bot->sendPhoto(end($photo)->file_id, [
+                    "chat_id" => $ch["chat_id"],
+                    "caption" => $caption
                 ]);
             }
         } else {
             $bot->sendMessage("Not a Valid Photo!");
+            $res = false;
         }
     } else if ($user["step"] == "Audio") {
         if (isset($audio)) {
             foreach ($channs as $ch) {
                 $bot->sendAudio($audio, [
-                    "chat_id" => $ch["chat_id"]
+                    "chat_id" => $ch["chat_id"],
+                    "caption" => $caption
                 ]);
             }
         } else {
             $bot->sendMessage("Not a Valid Audio!");
+            $res = false;
         }
     } else if ($user["step"] == "Voice") {
         if (isset($voice)) {
             foreach ($channs as $ch) {
                 $bot->sendVoice($voice, [
-                    "chat_id" => $ch["chat_id"]
+                    "chat_id" => $ch["chat_id"],
+                    "caption" => $caption
                 ]);
             }
         } else {
             $bot->sendMessage("Not a Valid Voice!");
+            $res = false;
         }
     } else if ($user["step"] == "Text") {
         if (isset($text)) {
@@ -188,14 +212,40 @@ if ($text == "/start") {
                 $bot->sendMessage($text, [
                     "chat_id" => $ch["chat_id"]
                 ]);
+                f_log(var_export($bot->result, true));
             }
         } else {
             $bot->sendMessage("Not a Valid Message!");
+            $res = false;
         }
     }
     
-    $bot->sendMessage("Post Sent Successfully");
-    $step = "start";
+    //if ($res) {
+    //    $bot->sendMessage("Post Sent Successfully");
+    //    $step = "start";
+    //}
+} else if (isset($bot->update_data["callback_id"])) {
+    $da = explode(".", $bot->update_data["data"]);
+    if ($da[0] == "title") {
+        $bot->getChat($da[1]);
+        $chann = $bot->result["result"];
+
+        $bot->answerCallbackQuery($chann["username"]);
+    } else if ($da[0] == "delete") {
+        $query = "DELETE FROM channels WHERE chat_id = {$da[1]};";
+        $res = $db->exec($query);
+        if ($res) {
+            $bot->answerCallbackQuery("Channel Deleted");
+        }
+    } else {
+        $status = $da[1] == "true" ? "false" : "true";
+        $query = "UPDATE channels SET active = {$status} WHERE chat_id = {$da[0]};";
+        $res = $db->exec($query);
+
+        if ($res) {
+            $bot->answerCallbackQuery("Channel " . $status == "false" ? "Deactivated" : "Activated");
+        }
+    }
 }
 
 

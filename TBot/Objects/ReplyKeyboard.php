@@ -3,7 +3,7 @@
 namespace TBot\Objects;
 
 class ReplyKeyboard {
-    public function __construct(public array $keyboard, public bool $is_persistent = false, public bool $resize_keyboard = false, public bool $one_time_keyboard = false, public string $input_field_placeholder = "", public bool $selective = false) {
+    public function __construct(public array $keyboard, public bool $is_persistent = false, public bool $resize_keyboard = true, public bool $one_time_keyboard = false, public string $input_field_placeholder = "", public bool $selective = false) {
     }
 
 
