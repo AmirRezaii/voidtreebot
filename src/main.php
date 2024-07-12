@@ -139,6 +139,7 @@ if ($text == "/start") {
     if ($user["step"] == "Video") {
         if (isset($video)) {
             foreach ($channs as $ch) {
+                if ($ch["active"] == 0) continue;
                 $bot->sendVideo($video, [
                     "chat_id" => $ch["chat_id"],
                     "caption" => $caption
@@ -151,6 +152,7 @@ if ($text == "/start") {
     } else if ($user["step"] == "Photo") {
         if (isset($photo)) {
             foreach ($channs as $ch) {
+                if ($ch["active"] == 0) continue;
                 $bot->sendPhoto(end($photo)->file_id, [
                     "chat_id" => $ch["chat_id"],
                     "caption" => $caption
@@ -163,6 +165,7 @@ if ($text == "/start") {
     } else if ($user["step"] == "Audio") {
         if (isset($audio)) {
             foreach ($channs as $ch) {
+                if ($ch["active"] == 0) continue;
                 $bot->sendAudio($audio, [
                     "chat_id" => $ch["chat_id"],
                     "caption" => $caption
@@ -175,6 +178,7 @@ if ($text == "/start") {
     } else if ($user["step"] == "Voice") {
         if (isset($voice)) {
             foreach ($channs as $ch) {
+                if ($ch["active"] == 0) continue;
                 $bot->sendVoice($voice, [
                     "chat_id" => $ch["chat_id"],
                     "caption" => $caption
@@ -187,6 +191,7 @@ if ($text == "/start") {
     } else if ($user["step"] == "Text") {
         if (isset($text)) {
             foreach ($channs as $ch) {
+                if ($ch["active"] == 0) continue;
                 $bot->sendMessage($text, [
                     "chat_id" => $ch["chat_id"]
                 ]);
