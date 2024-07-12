@@ -71,6 +71,7 @@ if ($text == "/start") {
     if (preg_match("#^@[^\s]*$#", $text)) {
         $bot->getChat($text);
         $chat = $bot->result["result"];
+        f_log(var_export($chat, true));
         $res = true;
 
         if (empty($chat)) $res = false;
