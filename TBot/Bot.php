@@ -50,6 +50,10 @@ class Bot {
             $this->update_data["message_id"] = $update->message->message_id;
             $this->update_data["text"] = $update->message->text;
             $this->update_data["date"] = $update->message->date;
+            $this->update_data["audio_id"] = $update->message->audio->file_id;
+            $this->update_data["video_id"] = $update->message->video->file_id;
+            $this->update_data["voice_id"] = $update->message->voice->file_id;
+            $this->update_data["document"] = $update->message->document->file_id;
             if (isset($update->message->from)) {
                 $this->update_data["is_bot"] = $update->message->from->is_bot;
                 $this->update_data["firstname"] = $update->message->from->first_name;

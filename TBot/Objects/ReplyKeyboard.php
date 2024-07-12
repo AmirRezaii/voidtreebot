@@ -27,10 +27,9 @@ class ReplyKeyboard {
 
         return json_encode($obj);
     }
-    public function remove() : string {
+    public static function remove() : string {
         $obj = [
             "remove_keyboard" => true,
-            "selective" => $this->selective
         ];
 
         return json_encode($obj);

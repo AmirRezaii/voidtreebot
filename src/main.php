@@ -2,6 +2,7 @@
 
 use TBot\Bot;
 use TBot\Database;
+use TBot\Objects\ReplyKeyboard;
 
 define("SPAM_TIME", 0.5);
 
@@ -20,6 +21,7 @@ $bot->getUpdate();
 $text = $bot->update_data["text"];
 $user_id = $bot->update_data["from_id"];
 $user_name = $bot->update_data["username"];
+$step = "start";
 
 $user = findUser($db, $user_id);
 
@@ -39,25 +41,36 @@ if ($text == "/start") {
 } else if ($text == "/add") {
     $bot->sendMessage("Please Send The Channel Name...");
 
-    $query = "UPDATE users SET step = 'add' WHERE user_id = :user_id;";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":user_id", $user_id);
-    $stmt->execute();
+    $step = "add";
 } else if ($text == "/list") {
     $query = "SELECT * FROM channels WHERE user_id = :user_id;";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":user_id", $user_id);
+    $stmt->bindParam(":user_id", $user["id"]);
     $stmt->execute();
 
-    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
-        $chat = $bot->getChat($row["chat_id"]);
-        $bot->sendMessage($chat->title);
+    $channs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($channs as $row) {
+        $bot->getChat($row["chat_id"]);
+        $chat = $bot->result["result"];
+        $bot->sendMessage($chat["title"]);
     }
+} else if ($text == "/post") {
+    $bot->sendMessage("Please Send The Post...");
+
+    $step = "post";
 } else if ($user["step"] == "add") {
     if (preg_match("#^@[^\s]*$#", $text)) {
         $bot->getChat($text);
-        $chat = $bot->result;
-        if ($chat && $chat["type"] == "channel") {
+        $chat = $bot->result["result"];
+        $res = true;
+
+        if (empty($chat)) $res = false;
+        if ($chat["type"] != "channel") $res = false;
+        if (getChann($db, $chat["id"])) $res = false;
+
+        f_log(json_encode($chat));
+        if ($res) {
             $query = "INSERT INTO channels (chat_id, user_id) VALUES (:chat_id, :user_id);";
             $stmt = $db->prepare($query);
             $stmt->bindParam(":chat_id", $chat["id"]);
@@ -65,22 +78,144 @@ if ($text == "/start") {
             $stmt->execute();
 
             $bot->sendMessage("Channel Added!");
+            $step = "start";
         } else {
-            $bot->sendMessage("Channel Doesn't Exist!");
+            $bot->sendMessage("Channel Already Added Or Doesn't Exist!");
         }
     } else {
         $bot->sendMessage("Please Send The Correct Channel Id");
     }
+} else if ($user["step"] == "post") {
+
+
+    $keys = [
+        [ "Video", "Photo" ],
+        [ "Voice", "Audio" ],
+        [ "Text" ]
+    ];
+
+    $reply = new ReplyKeyboard(ReplyKeyboard::init($keys));
+
+    $bot->sendMessage("Please Select...", [
+        "reply_markup" => $reply->use()
+    ]);
+
+    $step = "select_post";
+
+
+} else if ($user["step"] == "select_post") {
+    $bot->default = [
+        "sendMessage" => [
+            "reply_markup" => ReplyKeyboard::remove()
+        ]
+    ];
+
+    if ($text == "Video") {
+        $step = "Video";
+        $bot->sendMessage("Please Send The Video!");
+    } else if ($text == "Photo") {
+        $step = "Photo";
+        $bot->sendMessage("Please Send The Photo!");
+    } else if ($text == "Text") {
+        $step = "Text";
+        $bot->sendMessage("Please Send The Text!");
+    } else if ($text == "Audio") {
+        $step = "Audio";
+        $bot->sendMessage("Please Send The Audio!");
+    } else if ($text == "Voice") {
+        $step = "Voice";
+        $bot->sendMessage("Please Send The Voice!");
+    } else {
+        $bot->sendMessage("Not a Valid Type!");
+        $step = "start";
+    }
+}  else {
+    $query = "SELECT * FROM channels WHERE user_id = :user_id;";
+    $stmt = $db->prepare($query);
+    $stmt->bindParam(":user_id", $user["id"]);
+    $stmt->execute();
+
+    $channs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $video = $bot->update_data["video_id"];
+    $photo = $bot->update_data["photo_id"];
+    $audio = $bot->update_data["audio_id"];
+    $voice = $bot->update_data["voice_id"];
+
+    if ($user["step"] == "Video") {
+        if (isset($video)) {
+            foreach ($channs as $ch) {
+                $bot->sendVideo($video, [
+                    "chat_id" => $ch["chat_id"]
+                ]);
+            }
+        } else {
+            $bot->sendMessage("Not a Valid Video!");
+        }
+    } else if ($user["step"] == "Photo") {
+        if (isset($photo)) {
+            foreach ($channs as $ch) {
+                $bot->sendPhoto($photo, [
+                    "chat_id" => $ch["chat_id"]
+                ]);
+            }
+        } else {
+            $bot->sendMessage("Not a Valid Photo!");
+        }
+    } else if ($user["step"] == "Audio") {
+        if (isset($audio)) {
+            foreach ($channs as $ch) {
+                $bot->sendAudio($audio, [
+                    "chat_id" => $ch["chat_id"]
+                ]);
+            }
+        } else {
+            $bot->sendMessage("Not a Valid Audio!");
+        }
+    } else if ($user["step"] == "Voice") {
+        if (isset($voice)) {
+            foreach ($channs as $ch) {
+                $bot->sendVoice($voice, [
+                    "chat_id" => $ch["chat_id"]
+                ]);
+            }
+        } else {
+            $bot->sendMessage("Not a Valid Voice!");
+        }
+    } else if ($user["step"] == "Text") {
+        if (isset($text)) {
+            foreach ($channs as $ch) {
+                $bot->sendMessage($text, [
+                    "chat_id" => $ch["chat_id"]
+                ]);
+            }
+        } else {
+            $bot->sendMessage("Not a Valid Message!");
+        }
+    }
+    
+    $bot->sendMessage("Post Sent Successfully");
+    $step = "start";
 }
 
+
 $time = microtime(true);
-$query = "UPDATE users SET last_update = {$time} WHERE user_id = :user_id;";
+$query = "UPDATE users SET last_update = {$time}, step = '{$step}' WHERE user_id = :user_id;";
 $stmt = $db->prepare($query);
 $stmt->bindParam(":user_id", $user_id);
 $stmt->execute();
 
 
 
+function getChann(PDO $db, int $channel_id) : bool|array {
+    $query = "SELECT * FROM channels WHERE chat_id = :chat_id;";
+
+    $stmt = $db->prepare($query);
+    $stmt->bindParam(":chat_id", $channel_id);
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
 function addUser(PDO $db, int $user_id, ?string $user_name = null) : bool {
     $time = microtime(true);
