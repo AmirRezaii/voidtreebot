@@ -17,6 +17,9 @@ $bot->default = [
     ]
 ];
 
+$bot->setWebhook("voidtree.ir/voidtreebot");
+f_log(var_export($bot->result));
+exit;
 
 $bot->getUpdate();
 
@@ -76,7 +79,6 @@ if ($text == "/start") {
     if (preg_match("#^@[^\s]*$#", $text)) {
         $bot->getChat($text);
         $chat = $bot->result["result"];
-        f_log(var_export($chat, true));
         $res = true;
 
         if (empty($chat)) $res = false;
@@ -255,7 +257,6 @@ $stmt = $db->prepare($query);
 $stmt->bindParam(":user_id", $user_id);
 $stmt->execute();
 
-f_log(var_export($bot->update));
 
 
 function getChann(PDO $db, int $channel_id) : bool|array {
