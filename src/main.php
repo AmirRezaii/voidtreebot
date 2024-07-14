@@ -27,16 +27,18 @@ $step = "start";
 
 $user = findUser($db, $user_id);
 
-define("USER_LANG", $user["lang"]);
-
 if ($user) {
+    define("USER_LANG", $user["lang"]);
+
     if (microtime(true) - $user["last_update"] < SPAM_TIME) {
         exit;
     }
+} else {
+    define("USER_LANG", "fa");
 }
 
 if ($text == "/start") {
-    $bot->sendMessage($lang[USER_LANG]["start"]);
+    $bot->sendMessage(str_replace("*", $bot->update_data["firstname"], $lang[USER_LANG]["start"]));
 
     if (!$user) {
         addUser($db, $user_id, $user_name);
