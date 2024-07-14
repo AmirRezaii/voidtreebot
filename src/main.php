@@ -1,6 +1,6 @@
 <?php
 
-require("./language.php");
+require("language.php");
 
 use TBot\Bot;
 use TBot\Database;
@@ -18,6 +18,7 @@ $bot->default = [
         "chat_id" => $_ENV["admin_id"],
     ]
 ];
+
 
 $bot->getUpdate();
 
