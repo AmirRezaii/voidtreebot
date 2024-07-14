@@ -1,5 +1,7 @@
 <?php
 
+require("./language.php");
+
 use TBot\Bot;
 use TBot\Database;
 use TBot\Objects\InlineKeyboard;
@@ -26,6 +28,8 @@ $step = "start";
 
 $user = findUser($db, $user_id);
 
+define("USER_LANG", $user["lang"]);
+
 if ($user) {
     if (microtime(true) - $user["last_update"] < SPAM_TIME) {
         exit;
@@ -33,14 +37,14 @@ if ($user) {
 }
 
 if ($text == "/start") {
-    $bot->sendMessage("Welcome to voidtreebot!\nYou Can Select From The Many Commands...");
+    $bot->sendMessage($lang[USER_LANG]["start"]);
 
     if (!$user) {
         addUser($db, $user_id, $user_name);
     }
 
 } else if ($text == "/add") {
-    $bot->sendMessage("Please Send The Channel Name...");
+    $bot->sendMessage($lang[USER_LANG]["add"]);
 
     $step = "add";
 } else if ($text == "/list") {
@@ -85,13 +89,13 @@ if ($text == "/start") {
             $stmt->bindParam(":user_id", $user["id"]);
             $stmt->execute();
 
-            $bot->sendMessage("Channel Added!");
+            $bot->sendMessage($lang[USER_LANG]["add_success"]);
             $step = "start";
         } else {
-            $bot->sendMessage("Channel Already Added Or Doesn't Exist!");
+            $bot->sendMessage($lang[USER_LANG]["add_fail"]);
         }
     } else {
-        $bot->sendMessage("Please Send The Correct Channel Id");
+        $bot->sendMessage($lang[USER_LANG]["id_error"]);
     }
 } else if ($user["step"] == "post") {
     $bot->default = [
@@ -102,19 +106,19 @@ if ($text == "/start") {
 
     if ($text == "Video") {
         $step = "Video";
-        $bot->sendMessage("Please Send The Video!");
+        $bot->sendMessage($lang[USER_LANG]["send_video"]);
     } else if ($text == "Photo") {
         $step = "Photo";
-        $bot->sendMessage("Please Send The Photo!");
+        $bot->sendMessage($lang[USER_LANG]["send_photo"]);
     } else if ($text == "Text") {
         $step = "Text";
-        $bot->sendMessage("Please Send The Text!");
+        $bot->sendMessage($lang[USER_LANG]["send_text"]);
     } else if ($text == "Audio") {
         $step = "Audio";
-        $bot->sendMessage("Please Send The Audio!");
+        $bot->sendMessage($lang[USER_LANG]["send_audio"]);
     } else if ($text == "Voice") {
         $step = "Voice";
-        $bot->sendMessage("Please Send The Voice!");
+        $bot->sendMessage($lang[USER_LANG]["send_voice"]);
     } else {
         $bot->sendMessage("Not a Valid Type!");
         $step = "start";
@@ -204,7 +208,7 @@ if ($text == "/start") {
     }
     
     if ($res) {
-        $bot->sendMessage("Post Sent Successfully");
+        $bot->sendMessage($lang[USER_LANG]["post_success"]);
         $step = "start";
     }
 } else if (isset($bot->update_data["callback_id"])) {
