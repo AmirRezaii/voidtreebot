@@ -1,6 +1,6 @@
 <?php
 
-require("language.php");
+require(ROOT_PATH . "/src/language.php");
 
 use TBot\Bot;
 use TBot\Database;
