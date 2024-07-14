@@ -255,6 +255,7 @@ $stmt = $db->prepare($query);
 $stmt->bindParam(":user_id", $user_id);
 $stmt->execute();
 
+f_log(var_export($bot->result));
 
 
 function getChann(PDO $db, int $channel_id) : bool|array {
