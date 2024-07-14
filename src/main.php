@@ -18,6 +18,7 @@ $bot->default = [
 ];
 
 $bot->getUpdate();
+f_log(var_export($bot->update,true));
 
 $text = $bot->update_data["text"];
 $user_id = $bot->update_data["from_id"];
@@ -38,7 +39,6 @@ if ($user) {
 
 if ($text == "/start") {
     $bot->sendMessage(str_replace("*", $bot->update_data["firstname"], $lang[USER_LANG]["start"]));
-    f_log(var_export($bot->result,true));
 
     if (!$user) {
         addUser($db, $user_id, $user_name);
