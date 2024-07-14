@@ -23,4 +23,5 @@ use TBot\Dotenv;
 $dotenv = new Dotenv;
 $dotenv->load(ROOT_PATH . "/.env");
 
+require("./src/language.php");
 require("./src/main.php");

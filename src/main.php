@@ -1,7 +1,5 @@
 <?php
 
-require(ROOT_PATH . "/src/language.php");
-
 use TBot\Bot;
 use TBot\Database;
 use TBot\Objects\InlineKeyboard;
