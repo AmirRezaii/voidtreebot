@@ -211,7 +211,7 @@ if ($text == "/start") {
         $bot->sendMessage($lang[USER_LANG]["post_success"]);
         $step = "start";
     }
-} else if (isset($bot->update_data["callback_id"])) {
+} else if (!isset($text) && isset($bot->update_data["callback_id"])) {
     $da = explode(".", $bot->update_data["data"]);
     if ($da[0] == "title") {
         $bot->getChat($da[1]);
@@ -248,11 +248,13 @@ if ($text == "/start") {
 }
 
 
-$time = microtime(true);
-$query = "UPDATE users SET last_update = {$time}, step = '{$step}' WHERE user_id = :user_id;";
-$stmt = $db->prepare($query);
-$stmt->bindParam(":user_id", $user_id);
-$stmt->execute();
+if ($user) {
+    $time = microtime(true);
+    $query = "UPDATE users SET last_update = {$time}, step = '{$step}' WHERE user_id = :user_id;";
+    $stmt = $db->prepare($query);
+    $stmt->bindParam(":user_id", $user_id);
+    $stmt->execute();
+}
 
 
 function getChann(PDO $db, int $channel_id) : bool|array {
