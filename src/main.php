@@ -17,10 +17,6 @@ $bot->default = [
     ]
 ];
 
-$bot->setWebhook("voidtree.ir/voidtreebot");
-f_log(var_export($bot->result));
-exit;
-
 $bot->getUpdate();
 
 $text = $bot->update_data["text"];
@@ -42,6 +38,7 @@ if ($user) {
 
 if ($text == "/start") {
     $bot->sendMessage(str_replace("*", $bot->update_data["firstname"], $lang[USER_LANG]["start"]));
+    f_log(var_export($bot->result,true));
 
     if (!$user) {
         addUser($db, $user_id, $user_name);
@@ -256,7 +253,6 @@ $query = "UPDATE users SET last_update = {$time}, step = '{$step}' WHERE user_id
 $stmt = $db->prepare($query);
 $stmt->bindParam(":user_id", $user_id);
 $stmt->execute();
-
 
 
 function getChann(PDO $db, int $channel_id) : bool|array {
