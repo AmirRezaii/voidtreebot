@@ -11,11 +11,13 @@ require ROOT_PATH . "/src/includes/db_helper.php";
 require ROOT_PATH . "/src/includes/core.php";
 require ROOT_PATH . "/src/includes/key_helper.php";
 
-define("SPAM_TIME", 0);
+define("SPAM_TIME", 0.5);
 
 $bot = new Bot($_ENV["telegram_token"]);
 $db = new Database("localhost", "voidtree_voidtreebot", $_ENV["db_user"], $_ENV["db_password"]);
 $db = $db->getConnection();
+
+$COMMANDS = [ "/start", "/list", "/add", "post" ];
 
 $bot->default = [
     "sendMessage" => [
@@ -48,11 +50,11 @@ if ($user) {
     define("USER_LANG", "fa");
 }
 
-$COMMANDS = [ "/start", "/list", "/add", "post" ];
 
 if (str_starts_with($text, "/")) {
     if (!in_array($text, $COMMANDS)) {
-        $bot->senMessage("Not a Valid Command.");
+        $bot->sendMessage($lang[USER_LANG]["command_fail"]);
+        exit;
     }
 
     if ($text == "/start") {
@@ -265,10 +267,7 @@ if (str_starts_with($text, "/")) {
     $bot->editMessageText($lang[USER_LANG]["list"], [
         "reply_markup" => $ikeyboard->use()
     ]);
-} else {
-    $bot->sendMessage("Bruh");
-}
-
+} 
 
 if ($user) {
     $time = microtime(true);
