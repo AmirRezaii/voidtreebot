@@ -21,6 +21,7 @@ $bot->getUpdate();
 
 f_log(var_export($bot->update,true));
 if (!isset($bot->update_data)) {
+    f_log("No update data");
     exit;
 }
 
