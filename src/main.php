@@ -5,7 +5,7 @@ use TBot\Database;
 use TBot\Objects\InlineKeyboard;
 use TBot\Objects\ReplyKeyboard;
 
-require("./language.php");
+require "./language.php";
 
 require "./includes/db_helper.php";
 require "./includes/core.php";
