@@ -88,7 +88,7 @@ if (str_starts_with($text, "/")) {
 
         $reply = new ReplyKeyboard(ReplyKeyboard::init($keys));
 
-        $bot->sendMessage("Please Select...", [
+        $bot->sendMessage($lang[USER_LANG]["post_select"], [
             "reply_markup" => $reply->use()
         ]);
 
