@@ -1,7 +1,7 @@
 <?php
 $lang = [
     "fa" => [
-        "start" => "سلام ~
+        "start" => "سلام *~username*
 
 به بات *Voidtree* خوش اومدی🙏
 با این بات میتونی به کانال هات همزمان پیامت رو بفرستی.
@@ -26,7 +26,7 @@ $lang = [
     ],
 
     "en" => [
-        "start" => "Hi ~
+        "start" => "Hi *~username*
 
 Welcome To *Voidtree* Bot🙏
 With This Bot You Can Send Your Message Simultaneously To All Your Channels.

@@ -59,7 +59,7 @@ if (str_starts_with($text, "/")) {
     }
 
     if ($text == "/start") {
-        $bot->sendMessage(str_replace("~", $bot->update_data["firstname"], $lang[USER_LANG]["start"]));
+        $bot->sendMessage(str_replace("~user", $bot->update_data["firstname"], $lang[USER_LANG]["start"]));
 
         if (!$user) {
             addUser($db, $user_id, $user_name);
