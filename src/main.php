@@ -22,6 +22,7 @@ $COMMANDS = [ "/start", "/list", "/add", "post" ];
 $bot->default = [
     "sendMessage" => [
         "chat_id" => $_ENV["admin_id"],
+        "parse_mode" => "markdown",
     ]
 ];
 

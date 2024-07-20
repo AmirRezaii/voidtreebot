@@ -3,10 +3,10 @@ $lang = [
     "fa" => [
         "start" => "سلام ~
 
-به بات **Voidtree** خوش اومدی🙏
+به بات *Voidtree* خوش اومدی🙏
 با این بات میتونی به کانال هات همزمان پیامت رو بفرستی.
 
-**چطوری استفاده کنم؟**
+*چطوری استفاده کنم؟*
 کافیه این بات رو تو کانالت ادمین کنی و اد کنی به بات👌",
 
         "list" => "📂 لیست کانال‌هات:",
@@ -28,10 +28,10 @@ $lang = [
     "en" => [
         "start" => "Hi ~
 
-Welcome To **Voidtree** Bot🙏
+Welcome To *Voidtree* Bot🙏
 With This Bot You Can Send Your Message Simultaneously To All Your Channels.
 
-**How Do I Use This Bot??**
+*How Do I Use This Bot??*
 Just Make This Bot Admin In Your Channel And Add It To Voidtree👌",
 
         "list" => "📂 List of Channels:",
