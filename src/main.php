@@ -2,6 +2,7 @@
 
 use TBot\Bot;
 use TBot\Database;
+use TBot\Objects\BotCommand;
 use TBot\Objects\InlineKeyboard;
 use TBot\Objects\ReplyKeyboard;
 
@@ -25,6 +26,20 @@ $bot->default = [
         "parse_mode" => "markdown",
     ]
 ];
+
+
+$cmd1 = new BotCommand("start", "Start The Bot");
+$cmd2 = new BotCommand("list", "Show All Your Channels");
+$cmd3 = new BotCommand("add", "Add a Channel");
+$cmd4 = new BotCommand("post", "Post a Message To All Channels");
+$cmd4 = new BotCommand("language", "Set The Bot Language");
+
+
+
+$bot->setMyCommands(BotCommand::use($cmd1, $cmd2, $cmd3, $cmd4));
+
+exit;
+
 
 $bot->getUpdate();
 
@@ -88,7 +103,7 @@ if (str_starts_with($text, "/")) {
 
         $reply = new ReplyKeyboard(ReplyKeyboard::init($keys));
 
-        $bot->sendMessage($lang[USER_LANG]["post_select"], [
+        $bot->sendMessage($lang[USER_LANG]["post"], [
             "reply_markup" => $reply->use()
         ]);
 
