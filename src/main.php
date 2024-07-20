@@ -19,9 +19,9 @@ $bot->default = [
 
 $bot->getUpdate();
 
-f_log(var_export($bot->update,true));
+f_log(var_export($bot->update,true), "update");
 if (!isset($bot->update_data)) {
-    f_log("No update data");
+    f_log("No update data", "update");
     exit;
 }
 
@@ -60,7 +60,7 @@ if ($text == "/start") {
 
     $ikeyboard = new InlineKeyboard(InlineKeyboard::init($keys,true));
 
-    $bot->sendMessage("List of Channels:", [
+    $bot->sendMessage($lang[USER_LANG]["list"], [
         "reply_markup" => $ikeyboard->use()
     ]);
 } else if ($text == "/post") {
@@ -247,7 +247,7 @@ if ($text == "/start") {
 
     $ikeyboard = new InlineKeyboard(InlineKeyboard::init($keys,true));
 
-    $bot->editMessageText("List of Channels:", [
+    $bot->editMessageText($lang[USER_LANG]["list"], [
         "reply_markup" => $ikeyboard->use()
     ]);
 }
@@ -260,6 +260,8 @@ if ($user) {
     $stmt->bindParam(":user_id", $user_id);
     $stmt->execute();
 }
+
+f_log(var_export($bot->result, true), "result");
 
 
 function getChann(PDO $db, int $channel_id) : bool|array {
@@ -331,8 +333,14 @@ function generateKeys(Bot $bot, $channs) : array {
     return $keys;
 }
 
-function f_log(string $text) : void {
-    $myfile = fopen("log.txt", "w") or die("Unable to open file!");
+function f_log(string $text, string $file = "") : void {
+    if ($file) {
+        $myfile = fopen("{$file}_log.txt", "w") or die("Unable to open file!");
+
+    } else {
+        $myfile = fopen("log.txt", "w") or die("Unable to open file!");
+    }
+
     fwrite($myfile, $text);
     fclose($myfile); 
 }

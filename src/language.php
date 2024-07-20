@@ -10,6 +10,7 @@ $lang = [
 کافیه این بات رو تو کانالت ادمین کنی و اد کنی به بات👌",
 
         "list" => "📂 لیست کانال‌هات:",
+        "list_empty" => "لیست کانال ها خالی می‌باشد!",
         "add" => "لطفا نام کانال رو بفرست (مثال: channelname@)",
         "add_success" => "✅ کانال اضافه شد.",
         "add_fail" => "❎ کانال قبلا اضافه شده یا وجود ندارد!",
@@ -33,6 +34,7 @@ How Do I Use This Bot??
 Just Make This Bot Admin In Your Channel And Add It To Voidtree👌",
 
         "list" => "📂 List of Channels:",
+        "list_empty" => "List of Channels Is Empty!",
         "add" => "Send The Name of The Channel (example: @channelname)",
         "add_success" => "✅ Channel Added.",
         "add_fail" => "❎ Channel Already Added or Doesn't Exist!",
