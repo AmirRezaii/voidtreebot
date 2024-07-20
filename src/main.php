@@ -18,6 +18,10 @@ $bot->default = [
 ];
 
 $bot->getUpdate();
+
+if (!isset($bot->update_data)) {
+    exit;
+}
 f_log(var_export($bot->update,true));
 
 $text = $bot->update_data["text"];
