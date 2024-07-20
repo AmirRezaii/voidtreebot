@@ -18,7 +18,7 @@ $bot = new Bot($_ENV["telegram_token"]);
 $db = new Database("localhost", "voidtree_voidtreebot", $_ENV["db_user"], $_ENV["db_password"]);
 $db = $db->getConnection();
 
-$COMMANDS = [ "/start", "/list", "/add", "/post" ];
+$COMMANDS = [ "/start", "/list", "/add", "/post", "/language" ];
 
 $bot->default = [
     "sendMessage" => [
