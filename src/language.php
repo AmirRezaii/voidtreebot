@@ -25,6 +25,9 @@ $lang = [
         "send_voice" => "لطفا ویس را ارسال کنید!",
         "post_success" => "✅ پست با موفقیت ارسال شد.",
         "command_fail" => "⚠️ این دستور موجود نمی باشد!",
+        "lang_select" => "لطفا زبان خود را انتخاب کنید...",
+        "lang_success" => "زبان با موفقیت تغییر کرد!",
+        "lang_fail" => "این زبان موجود نمیباشد!",
     ],
 
     "en" => [
@@ -50,6 +53,9 @@ Just Make This Bot Admin In Your Channel And Add It To Voidtree👌",
         "send_voice" => "Please Send Voice!",
         "send_audio" => "Please Send Audio File!",
         "post_success" => "✅ Post Sent Successfully.",
-        "command_fail" => "⚠️ This Command Is Not Available!"
+        "command_fail" => "⚠️ This Command Is Not Available!",
+        "lang_select" => "Please Select a Language...",
+        "lang_success" => "Language Changed Successfully!",
+        "lang_fail" => "Not a Valid Language!",
     ]
 ];

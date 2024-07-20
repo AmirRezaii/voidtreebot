@@ -28,17 +28,6 @@ $bot->default = [
 ];
 
 
-$cmd1 = new BotCommand("start", "Start The Bot");
-$cmd2 = new BotCommand("list", "Show All Your Channels");
-$cmd3 = new BotCommand("add", "Add a Channel");
-$cmd4 = new BotCommand("post", "Post a Message To All Channels");
-$cmd5 = new BotCommand("language", "Set The Bot Language");
-
-
-
-$bot->setMyCommands(BotCommand::use($cmd1, $cmd2, $cmd3, $cmd4, $cmd5));
-
-exit;
 
 
 $bot->getUpdate();
@@ -108,7 +97,46 @@ if (str_starts_with($text, "/")) {
         ]);
 
         $step = "post";
+    } else if ($text == "/language") {
+        $keys = [
+            [ 
+                "en (English)" . USER_LANG == "en" ? "✅" : "", 
+                "Farsi (fa)" . USER_LANG == "fa" ? "✅" : "" 
+            ],
+        ];
+
+        $reply = new ReplyKeyboard(ReplyKeyboard::init($keys));
+
+        $bot->sendMessage($lang[USER_LANG]["lang_select"], [
+            "reply_markup" => $reply->use()
+        ]);
+
+        $step = "language";
     }
+
+} else if ($user["step"] == "language") {
+    $bot->default = [
+        "sendMessage" => [
+            "reply_markup" => ReplyKeyboard::remove()
+        ]
+    ];
+
+    if ($text == "fa" || $text == "en") {
+        $query = "UPDATE users SET lang = {$text} WHERE user_id = :user_id;";
+
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(":user_id", $user_id);
+        $stmt->execute();
+
+        $bot->sendMessage($lang[match ($text) {
+            "fa" => "en",
+            "en" => "fa",
+        }]["lang_success"]);
+    } else {
+        $bot->sendMessage($lang[USER_LANG]["lang_fail"]);
+    }
+
+    $step = "start";
 
 } else if ($user["step"] == "add") {
     if (preg_match("#^@[^\s]*$#", $text)) {
