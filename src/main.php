@@ -5,11 +5,11 @@ use TBot\Database;
 use TBot\Objects\InlineKeyboard;
 use TBot\Objects\ReplyKeyboard;
 
-require "./language.php";
+require ROOT_PATH . "/src/language.php";
 
-require "./includes/db_helper.php";
-require "./includes/core.php";
-require "./includes/key_helper.php";
+require ROOT_PATH . "/src/includes/db_helper.php";
+require ROOT_PATH . "/src/includes/core.php";
+require ROOT_PATH . "/src/includes/key_helper.php";
 
 define("SPAM_TIME", 0.5);
 
