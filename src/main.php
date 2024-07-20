@@ -122,7 +122,7 @@ if (str_starts_with($text, "/")) {
     ];
 
     if ($text == "fa" || $text == "en") {
-        $query = "UPDATE users SET lang = {$text} WHERE user_id = {$user_id};";
+        $query = "UPDATE users SET lang = '{$text}' WHERE user_id = {$user_id};";
 
         $db->exec($query);
 
