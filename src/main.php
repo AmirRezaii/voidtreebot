@@ -121,15 +121,18 @@ if (str_starts_with($text, "/")) {
         ]
     ];
 
+    if (str_starts_with($text, "fa")) {
+        $text = "fa";
+    } else if (str_starts_with($text, "en")) {
+        $text = "en";
+    }
+
     if ($text == "fa" || $text == "en") {
         $query = "UPDATE users SET lang = '{$text}' WHERE user_id = {$user_id};";
 
         $db->exec($query);
 
-        $bot->sendMessage($lang[match ($text) {
-            "fa" => "en",
-            "en" => "fa",
-        }]["lang_success"]);
+        $bot->sendMessage($lang[$text]["lang_success"]);
     } else {
         $bot->sendMessage($lang[USER_LANG]["lang_fail"]);
     }
