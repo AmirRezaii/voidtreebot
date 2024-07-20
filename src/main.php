@@ -48,41 +48,50 @@ if ($user) {
     define("USER_LANG", "fa");
 }
 
-if ($text == "/start") {
-    $bot->sendMessage(str_replace("*", $bot->update_data["firstname"], $lang[USER_LANG]["start"]));
+$COMMANDS = [ "/start", "/list", "/add", "post" ];
 
-    if (!$user) {
-        addUser($db, $user_id, $user_name);
+if (str_starts_with($text, "/")) {
+    if (!in_array($text, $COMMANDS)) {
+        $bot->senMessage("Not a Valid Command.");
     }
 
-} else if ($text == "/add") {
-    $bot->sendMessage($lang[USER_LANG]["add"]);
+    if ($text == "/start") {
+        $bot->sendMessage(str_replace("*", $bot->update_data["firstname"], $lang[USER_LANG]["start"]));
 
-    $step = "add";
-} else if ($text == "/list") {
-    $channs = getChannsUser($db, $user["id"]);
+        if (!$user) {
+            addUser($db, $user_id, $user_name);
+        }
 
-    $keys = generateKeys($bot, $channs);
+    } else if ($text == "/add") {
+        $bot->sendMessage($lang[USER_LANG]["add"]);
 
-    $ikeyboard = new InlineKeyboard(InlineKeyboard::init($keys,true));
+        $step = "add";
+    } else if ($text == "/list") {
+        $channs = getChannsUser($db, $user["id"]);
 
-    $bot->sendMessage($lang[USER_LANG]["list"], [
-        "reply_markup" => $ikeyboard->use()
-    ]);
-} else if ($text == "/post") {
-    $keys = [
-        [ "Video", "Photo" ],
-        [ "Voice", "Audio" ],
-        [ "Text" ]
-    ];
+        $keys = generateKeys($bot, $channs);
 
-    $reply = new ReplyKeyboard(ReplyKeyboard::init($keys));
+        $ikeyboard = new InlineKeyboard(InlineKeyboard::init($keys,true));
 
-    $bot->sendMessage("Please Select...", [
-        "reply_markup" => $reply->use()
-    ]);
+        $bot->sendMessage($lang[USER_LANG]["list"], [
+            "reply_markup" => $ikeyboard->use()
+        ]);
+    } else if ($text == "/post") {
+        $keys = [
+            [ "Video", "Photo" ],
+            [ "Voice", "Audio" ],
+            [ "Text" ]
+        ];
 
-    $step = "post";
+        $reply = new ReplyKeyboard(ReplyKeyboard::init($keys));
+
+        $bot->sendMessage("Please Select...", [
+            "reply_markup" => $reply->use()
+        ]);
+
+        $step = "post";
+    }
+
 } else if ($user["step"] == "add") {
     if (preg_match("#^@[^\s]*$#", $text)) {
         $bot->getChat($text);
