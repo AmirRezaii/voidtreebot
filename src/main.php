@@ -11,7 +11,7 @@ require ROOT_PATH . "/src/includes/db_helper.php";
 require ROOT_PATH . "/src/includes/core.php";
 require ROOT_PATH . "/src/includes/key_helper.php";
 
-define("SPAM_TIME", 0.5);
+define("SPAM_TIME", 0);
 
 $bot = new Bot($_ENV["telegram_token"]);
 $db = new Database("localhost", "voidtree_voidtreebot", $_ENV["db_user"], $_ENV["db_password"]);
