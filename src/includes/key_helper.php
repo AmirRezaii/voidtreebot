@@ -10,8 +10,8 @@ function generateKeys(Bot $bot, $channs) : array {
         $chat = $bot->result["result"];
 
         $title_key = [ $chat["title"], "title." . $row["chat_id"] ];
-        $active_key = [ $row["active"] ? "Activated" : "Deactivated", $row["chat_id"] . "." . $row["active"] ];
-        $delete_key = [ "Delete", "delete." . $row["chat_id"] ];
+        $active_key = [ $row["active"] ? "✅" : "❎", $row["chat_id"] . "." . $row["active"] ];
+        $delete_key = [ "🗑", "delete." . $row["chat_id"] ];
 
         $key = [];
         $key[] = $title_key;

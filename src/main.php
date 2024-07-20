@@ -99,10 +99,7 @@ if (str_starts_with($text, "/")) {
         $step = "post";
     } else if ($text == "/language") {
         $keys = [
-            [ 
-                "en (English)" . USER_LANG == "en" ? "✅" : "", 
-                "Farsi (fa)" . USER_LANG == "fa" ? "✅" : "" 
-            ],
+            [ "English (en)", "Farsi (fa)" ],
         ];
 
         $reply = new ReplyKeyboard(ReplyKeyboard::init($keys));
@@ -121,9 +118,9 @@ if (str_starts_with($text, "/")) {
         ]
     ];
 
-    if (str_starts_with($text, "fa")) {
+    if ($text == "Farsi (fa)") {
         $text = "fa";
-    } else if (str_starts_with($text, "en")) {
+    } else if ($text == "English (en)") {
         $text = "en";
     }
 
