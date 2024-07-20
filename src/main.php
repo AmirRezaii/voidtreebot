@@ -5,6 +5,12 @@ use TBot\Database;
 use TBot\Objects\InlineKeyboard;
 use TBot\Objects\ReplyKeyboard;
 
+require("./language.php");
+
+require "./includes/db_helper.php";
+require "./includes/core.php";
+require "./includes/key_helper.php";
+
 define("SPAM_TIME", 0.5);
 
 $bot = new Bot($_ENV["telegram_token"]);
@@ -250,6 +256,8 @@ if ($text == "/start") {
     $bot->editMessageText($lang[USER_LANG]["list"], [
         "reply_markup" => $ikeyboard->use()
     ]);
+} else {
+    $bot->sendMessage("Bruh");
 }
 
 
@@ -264,83 +272,3 @@ if ($user) {
 f_log(var_export($bot->result, true), "result");
 
 
-function getChann(PDO $db, int $channel_id) : bool|array {
-    $query = "SELECT * FROM channels WHERE chat_id = :chat_id;";
-
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":chat_id", $channel_id);
-    $stmt->execute();
-
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
-
-function getChannsUser(PDO $db, int $user_id) : bool|array {
-    $query = "SELECT * FROM channels WHERE user_id = :user_id;";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":user_id", $user_id);
-    $stmt->execute();
-
-    return $stmt->fetchAll();
-}
-
-function addUser(PDO $db, int $user_id, ?string $user_name = null) : bool {
-    $time = microtime(true);
-
-    if (isset($user_name)) {
-        $query = "INSERT INTO users (user_id, user_name, last_update) VALUES (:user_id, :user_name, {$time});";
-
-        $stmt = $db->prepare($query);
-        $stmt->bindParam(":user_id", $user_id);
-        $stmt->bindParam(":user_name", $user_name);
-    } else {
-        $query = "INSERT INTO users (user_id, last_update) VALUES (:user_id, {$time});";
-
-        $stmt = $db->prepare($query);
-        $stmt->bindParam(":user_id", $user_id);
-    }
-    $res = $stmt->execute();
-    return $res; 
-}
-
-function findUser(PDO $db, int $user_id) : bool|array {
-    $query = "SELECT * FROM users WHERE user_id = :user_id;";
-
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":user_id", $user_id);
-    $stmt->execute();
-
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
-
-function generateKeys(Bot $bot, $channs) : array {
-    $keys = [];
-
-    foreach ($channs as $row) {
-        $bot->getChat($row["chat_id"]);
-        $chat = $bot->result["result"];
-
-        $title_key = [ $chat["title"], "title." . $row["chat_id"] ];
-        $active_key = [ $row["active"] ? "Activated" : "Deactivated", $row["chat_id"] . "." . $row["active"] ];
-        $delete_key = [ "Delete", "delete." . $row["chat_id"] ];
-
-        $key = [];
-        $key[] = $title_key;
-        $key[] = $active_key;
-        $key[] = $delete_key;
-
-        $keys[] = $key;
-    }
-    return $keys;
-}
-
-function f_log(string $text, string $file = "") : void {
-    if ($file) {
-        $myfile = fopen("{$file}_log.txt", "w") or die("Unable to open file!");
-
-    } else {
-        $myfile = fopen("log.txt", "w") or die("Unable to open file!");
-    }
-
-    fwrite($myfile, $text);
-    fclose($myfile); 
-}
