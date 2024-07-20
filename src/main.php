@@ -294,9 +294,7 @@ if (str_starts_with($text, "/")) {
         $res = $db->exec($query);
 
         if ($res) {
-            $bot->answerCallbackQuery("Channel " . $status ? "cock" : "Deactivated", [
-                "show_alert" => "true"
-            ]);
+            $bot->answerCallbackQuery($status == 1 ? "Activated" : "Deactivated");
         }
     }
 
