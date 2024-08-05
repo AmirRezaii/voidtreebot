@@ -2,7 +2,6 @@
 
 use TBot\Bot;
 use TBot\Database;
-use TBot\Objects\BotCommand;
 use TBot\Objects\InlineKeyboard;
 use TBot\Objects\ReplyKeyboard;
 
@@ -320,5 +319,3 @@ if ($user) {
 }
 
 f_log(var_export($bot->result, true), "result");
-
-
